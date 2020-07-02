@@ -1,0 +1,252 @@
+### Root widget (primary widget to be displayed on launch) definition ###
+
+# Import all necessary libraries
+#:import NavigationLayout kivymd.navigationdrawer.NavigationLayout
+#:import Toolbar kivymd.toolbar.Toolbar
+#:import ThemeManager kivymd.theming.ThemeManager
+#:import MDNavigationDrawer kivymd.navigationdrawer.MDNavigationDrawer
+#:import NavigationLayout kivymd.navigationdrawer.NavigationLayout
+#:import NavigationDrawerDivider kivymd.navigationdrawer.NavigationDrawerDivider
+#:import NavigationDrawerToolbar kivymd.navigationdrawer.NavigationDrawerToolbar
+#:import NavigationDrawerSubheader kivymd.navigationdrawer.NavigationDrawerSubheader
+#:import MDCheckbox kivymd.selectioncontrols.MDCheckbox
+#:import MDSwitch kivymd.selectioncontrols.MDSwitch
+#:import MDList kivymd.list.MDList
+#:import OneLineListItem kivymd.list.OneLineListItem
+#:import TwoLineListItem kivymd.list.TwoLineListItem
+#:import ThreeLineListItem kivymd.list.ThreeLineListItem
+#:import OneLineAvatarListItem kivymd.list.OneLineAvatarListItem
+#:import OneLineIconListItem kivymd.list.OneLineIconListItem
+#:import OneLineAvatarIconListItem kivymd.list.OneLineAvatarIconListItem
+#:import MDTextField kivymd.textfields.MDTextField
+#:import MDSpinner kivymd.spinner.MDSpinner
+#:import MDCard kivymd.card.MDCard
+#:import MDSeparator kivymd.card.MDSeparator
+#:import MDDropdownMenu kivymd.menu.MDDropdownMenu
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import colors kivymd.color_definitions.colors
+#:import SmartTile kivymd.grid.SmartTile
+#:import MDSlider kivymd.slider.MDSlider
+#:import MDTabbedPanel kivymd.tabs.MDTabbedPanel
+#:import MDTab kivymd.tabs.MDTab
+#:import MDProgressBar kivymd.progressbar.MDProgressBar
+#:import MDAccordion kivymd.accordion.MDAccordion
+#:import MDAccordionItem kivymd.accordion.MDAccordionItem
+#:import MDAccordionSubItem kivymd.accordion.MDAccordionSubItem
+#:import MDThemePicker kivymd.theme_picker.MDThemePicker
+#:import MDBottomNavigation kivymd.tabs.MDBottomNavigation
+#:import MDBottomNavigationItem kivymd.tabs.MDBottomNavigationItem
+
+# The main navigation layout UI (main page)
+NavigationLayout:
+    # Has two places to place widgets: Left drawer and the entire interface
+    # Left Drawer ->
+    MDNavigationDrawer:
+        # Text that goes on top of the drawer 
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: .95
+            
+            # Bottom logo image
+            Image:
+                source: 'image.jpeg'
+                
+        NavigationDrawerSubheader:
+            text: "Select Conversion Format..."
+            
+        NavigationDrawerIconButton:
+            icon: 'file-document'
+            text: 'TXT to Text'
+            on_release: screen_manager.current = 'txt_screen'
+            on_release: app.init_textbox()
+                
+        NavigationDrawerIconButton:
+            icon: 'file-pdf'
+            text: 'PDF to Text'
+            on_release: screen_manager.current = 'pdf_screen'
+            on_release: app.init_textbox()
+            
+        NavigationDrawerIconButton:
+            icon: 'file-image'
+            text: 'IMG to Text'
+            on_release: screen_manager.current = 'img_screen'
+            on_release: app.init_textbox()
+            on_release: app.init_textbox()
+    
+    # The rest ->
+    # A container that holds components in a box-y fashion
+    BoxLayout:
+        orientation: 'vertical'
+        
+        # Big bar at the top
+        Toolbar:
+            title: "Text Synth"
+            md_bg_color: app.theme_cls.primary_color
+            left_action_items: [['menu', lambda x: root.toggle_nav_drawer()]]
+            right_action_items: [['window-close', lambda x: app.exit_app()]]
+            
+        ScreenManager:
+            id: screen_manager
+            Screen:
+                name: 'txt_screen'
+                
+                AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_y: 'top'
+                    
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint: .9, .8
+                        padding: '20dp'
+                                        
+                        MDTextField:
+                            id: textfield_txtpath
+                            hint_text: "Please enter '.txt' file path"
+                            helper_text: "The selected file is not a '.txt' file"
+                            helper_text_mode: "on_error"
+                            color_mode: 'accent'
+                        
+                        MDRaisedButton:
+                            text: "Select a file"
+                            elevation_normal: 5
+                            on_press: screen_manager.current = "filechooser_screen"
+                            on_press: app.screen_track()
+                        
+                        BoxLayout:
+                            orientation: 'vertical'
+                            
+                            MDLabel:
+                                text: "Text fetched from file"
+                                theme_text_color: 'Secondary'
+                                font_style: 'Title'
+                                 
+                            TextInput:
+                                id: textbox_txt
+                                size_hint: (1, None)
+                                height: 240
+                                multiline: 'true'
+                                
+                MDRaisedButton:
+                    text: "Synthesize to speech"
+                    elevation_normal: 5
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.15}
+                    on_press: app.tts()
+            
+            Screen:
+                name: 'pdf_screen'
+                
+                AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_y: 'top'
+                    
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint: .9, .8
+                        padding: '20dp'
+                                        
+                        MDTextField:
+                            id: textfield_pdfpath
+                            hint_text: "Please enter '.pdf' file path"
+                            helper_text: "The selected file is not a '.pdf' file"
+                            helper_text_mode: "on_focus"
+                            color_mode: 'accent'
+                        
+                        MDRaisedButton:
+                            text: "Select a file"
+                            elevation_normal: 5
+                            # pos_hint: {'center_x': 0, 'center_y': 0}
+                            on_press: screen_manager.current = "filechooser_screen"
+                            on_press: app.screen_track()
+                        
+                        BoxLayout:
+                            orientation: 'vertical'
+                            
+                            MDLabel:
+                                text: "Text fetched from file"
+                                theme_text_color: 'Secondary'
+                                font_style: 'Title'
+                                 
+                            TextInput:
+                                id: textbox_pdf
+                                size_hint: (1, None)
+                                height: 240
+                                multiline: 'true'
+                                
+                MDRaisedButton:
+                    text: "Synthesize to speech"
+                    elevation_normal: 5
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.15}
+                    on_press: app.tts()
+                    
+            Screen:
+                name: 'img_screen'
+                
+                AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_y: 'top'
+                    
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint: .9, .8
+                        padding: '20dp'
+                                        
+                        MDTextField:
+                            id: textfield_imgpath
+                            hint_text: "Please enter '.png' / '.jpeg' file path"
+                            helper_text: "The selected file is not a '.png' / '.jpeg' file"
+                            helper_text_mode: "on_focus"
+                            color_mode: 'accent'
+                        
+                        MDRaisedButton:
+                            text: "Select a file"
+                            elevation_normal: 5
+                            # pos_hint: {'center_x': 0, 'center_y': 0}
+                            on_press: screen_manager.current = "filechooser_screen"
+                            on_press: app.screen_track()
+                        
+                        BoxLayout:
+                            orientation: 'vertical'
+                            
+                            MDLabel:
+                                text: "Text fetched from file"
+                                theme_text_color: 'Secondary'
+                                font_style: 'Title'
+                                 
+                            TextInput:
+                                id: textbox_img
+                                size_hint: (1, None)
+                                height: 240
+                                multiline: 'true'
+                                
+                MDRaisedButton:
+                    text: "Synthesize to speech"
+                    elevation_normal: 5
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.15}
+                    on_press: app.tts()
+                    
+            Screen:
+                name: 'filechooser_screen'
+                
+                AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_y: 'top'
+                    
+                FileChooserIconView:
+                    id: filechooser
+                    canvas.before:
+                        Color:
+                            rgba: .326, .41, .45, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                            
+                    on_selection: app.file_selection()
+                    on_selection: screen_manager.current = app.screen_now
+                
+                MDRaisedButton:
+                    text: "Back"
+                    elevation_normal: 5
+                    pos_hint: {'center_x': 0.1, 'center_y': 0.1}
+                    md_bg_color: (1,1,1,0)
+                    on_press: screen_manager.current = app.screen_now
+                    
